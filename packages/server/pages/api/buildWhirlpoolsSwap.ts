@@ -49,7 +49,7 @@ export default async function (request: NextApiRequest, response: NextApiRespons
     let slippingTolerance: Percentage;
     try {
         slippingTolerance = Percentage.fromDecimal(
-            new Decimal(request.body?.slippingTolerance)
+            new Decimal.Decimal(request.body?.slippingTolerance)
         );
     } catch {
         response.status(400).send({ status: 'error', message: 'missing or invalid "slippingTolerance" parameter' });
