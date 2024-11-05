@@ -34,6 +34,16 @@ export function getABMints(sourceMint: PublicKey, targetMint: PublicKey): [Publi
     return [AddressUtil.toPubKey(addressA), AddressUtil.toPubKey(addressB)];
 }
 
+function findCorrectPool(mintA: PublicKey, mintB: PublicKey): PublicKey {
+    // usdc
+    if ([mintA.toBase58(), mintB.toBase58()].includes("AKEWE7Bgh87GPp171b4cJPSSZfmZwQ3KaqYqXoKLNAEE")) {
+        return new PublicKey("2FR5TF3iDCLzGbWAuejR7LKiUL1J8ERnC1z2WGhC9s6D");
+    }
+
+    // sol
+    return new PublicKey("CFYaUSe34VBEoeKdJBXm9ThwsWoLaQ5stgiA3eUWBwV4");
+}
+
 export async function getPoolAndQuote(
     context: WhirlpoolContext,
     mintA: PublicKey,
@@ -43,16 +53,8 @@ export async function getPoolAndQuote(
     slippingTolerance: Percentage
 ): Promise<[Whirlpool, SwapQuote]> {
     const client = buildWhirlpoolClient(context);
-    const whirlpoolKeya = PDAUtil.getWhirlpool(
-        WHIRLPOOL_PROGRAM_ID,
-        WHIRLPOOL_CONFIG_KEY,
-        AddressUtil.toPubKey(mintA),
-        AddressUtil.toPubKey(mintB),
-        WHIRLPOOL_TICK_SPACING
-   );
-   console.log(whirlpoolKeya.publicKey.toBase58())
-   console.log("blablabla")
-   const whirlpoolKey = new PublicKey("BVDWChzYhUq6Y9P7KnmGyYe9eyYRzoRBzHY67vMH1zpV");
+    // pool account
+    const whirlpoolKey = findCorrectPool(mintA, mintB);
     const whirlpool = await client.getPool(whirlpoolKey);
     const quote = await swapQuoteByInputToken(
         whirlpool,
