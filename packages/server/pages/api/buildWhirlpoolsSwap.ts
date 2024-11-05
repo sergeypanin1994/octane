@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import base58 from 'bs58';
 import BN from 'bn.js';
-import Decimal from 'decimal.js';
+import * as Decimal from 'decimal.js';
 
 import { PublicKey } from '@solana/web3.js';
 import { getAssociatedTokenAddress } from '@solana/spl-token';
