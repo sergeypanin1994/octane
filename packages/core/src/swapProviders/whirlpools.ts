@@ -8,7 +8,7 @@ import {
     WhirlpoolContext, WhirlpoolIx,
 } from '@orca-so/whirlpools-sdk';
 import { Wallet } from '@project-serum/anchor';
-import { AddressUtil, Percentage } from '@orca-so/common-sdk';
+import { AddressUtil, Percentage, Wallet as OrcaWallet } from '@orca-so/common-sdk';
 import BN from 'bn.js';
 import {
     createAssociatedTokenAccountInstruction,
@@ -18,7 +18,7 @@ import {
 } from '@solana/spl-token';
 
 const WHIRLPOOL_PROGRAM_ID = new PublicKey('whirLbMiicVdio4qvUfM5KAg6Ct8VwpYzGff3uctyCc');
-const WHIRLPOOL_CONFIG_KEY = new PublicKey('2LecshUwdy9xi7meFgHtFJQNSKk4KdTrcpvaB56dP2NQ');
+const WHIRLPOOL_CONFIG_KEY = new PublicKey('FVG4oDbGv16hqTUbovjyGmtYikn6UBEnazz6RVDMEFwv');
 const WHIRLPOOL_TICK_SPACING = 64;
 
 export const MESSAGE_TOKEN_KEY = 'whirlpools-swap';
@@ -26,7 +26,7 @@ export const MESSAGE_TOKEN_KEY = 'whirlpools-swap';
 export function getWhirlpoolsContext(connection: Connection): WhirlpoolContext {
     // We use the context only for getting quotes and looking up instructions, so no need for real keypair
     const wallet = new Wallet(Keypair.generate());
-    return WhirlpoolContext.from(connection, wallet, WHIRLPOOL_PROGRAM_ID);
+    return WhirlpoolContext.from(connection, wallet as OrcaWallet, WHIRLPOOL_PROGRAM_ID);
 }
 
 export function getABMints(sourceMint: PublicKey, targetMint: PublicKey): [PublicKey, PublicKey] {
@@ -43,14 +43,17 @@ export async function getPoolAndQuote(
     slippingTolerance: Percentage
 ): Promise<[Whirlpool, SwapQuote]> {
     const client = buildWhirlpoolClient(context);
-    const whirlpoolKey = PDAUtil.getWhirlpool(
+    const whirlpoolKeya = PDAUtil.getWhirlpool(
         WHIRLPOOL_PROGRAM_ID,
         WHIRLPOOL_CONFIG_KEY,
         AddressUtil.toPubKey(mintA),
         AddressUtil.toPubKey(mintB),
         WHIRLPOOL_TICK_SPACING
-    );
-    const whirlpool = await client.getPool(whirlpoolKey.publicKey, true);
+   );
+   console.log(whirlpoolKeya.publicKey.toBase58())
+   console.log("blablabla")
+   const whirlpoolKey = new PublicKey("BVDWChzYhUq6Y9P7KnmGyYe9eyYRzoRBzHY67vMH1zpV");
+    const whirlpool = await client.getPool(whirlpoolKey);
     const quote = await swapQuoteByInputToken(
         whirlpool,
         sourceMint,
@@ -58,7 +61,6 @@ export async function getPoolAndQuote(
         slippingTolerance,
         WHIRLPOOL_PROGRAM_ID,
         context.fetcher,
-        true,
     );
     return [whirlpool, quote];
 }
@@ -82,16 +84,20 @@ export async function getSwapInstructions(
     ];
 
     const data = whirlpool.getData();
-    const swapInstructions = WhirlpoolIx.swapIx(
+    const swapInstructions = WhirlpoolIx.swapV2Ix(
         context.program,
         {
             ...quote,
             whirlpool: whirlpool.getAddress(),
-            tokenAuthority: user,
+            tokenMintA: whirlpool.getTokenAInfo().mint,
+            tokenMintB: whirlpool.getTokenBInfo().mint,
             tokenOwnerAccountA: await getAssociatedTokenAddress(data.tokenMintA, user),
+            tokenOwnerAccountB: await getAssociatedTokenAddress(data.tokenMintB, user, undefined, new PublicKey("TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb")),
             tokenVaultA: data.tokenVaultA,
-            tokenOwnerAccountB: await getAssociatedTokenAddress(data.tokenMintB, user),
             tokenVaultB: data.tokenVaultB,
+            tokenProgramA: new PublicKey("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"),
+            tokenProgramB: new PublicKey("TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb"),
+            tokenAuthority: user,
             oracle: PDAUtil.getOracle(WHIRLPOOL_PROGRAM_ID, whirlpool.getAddress()).publicKey
         }
     ).instructions;

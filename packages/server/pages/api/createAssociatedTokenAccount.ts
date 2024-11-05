@@ -47,7 +47,7 @@ export default async function (request: NextApiRequest, response: NextApiRespons
         if (config.returnSignature !== undefined) {
             if (!await isReturnedSignatureAllowed(
                 request,
-                config.returnSignature as ReturnSignatureConfigField
+                config.returnSignature as unknown as ReturnSignatureConfigField
             )) {
                 response.status(400).send({ status: 'error', message: 'anti-spam check failed' });
                 return;

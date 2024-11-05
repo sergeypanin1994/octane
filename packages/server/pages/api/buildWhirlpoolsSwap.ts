@@ -78,7 +78,7 @@ export default async function (request: NextApiRequest, response: NextApiRespons
             3000,
             {
                 amount: Number(tokenFee.fee),
-                sourceAccount: await getAssociatedTokenAddress(sourceMint, user),
+                sourceAccount: await getAssociatedTokenAddress(sourceMint, user, undefined, new PublicKey("TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb")),
                 destinationAccount: tokenFee.account
             }
         );
@@ -86,7 +86,7 @@ export default async function (request: NextApiRequest, response: NextApiRespons
         if (config.returnSignature !== undefined) {
             if (!await isReturnedSignatureAllowed(
                 request,
-                config.returnSignature as ReturnSignatureConfigField
+                config.returnSignature as unknown as ReturnSignatureConfigField
             )) {
                 response.status(400).send({ status: 'error', message: 'anti-spam check failed' });
                 return;

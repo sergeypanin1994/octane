@@ -1,14 +1,15 @@
 {
-    "rpcUrl": "https://api.devnet.solana.com",
-    "maxSignatures": 2,
-    "lamportsPerSignature": 5000,
+    "rpcUrl": "https://mainnetbeta-rpc.eclipse.xyz",
+    "maxSignatures": 5,
+    "returnSignature": true,
+    "lamportsPerSignature": 15000,
     "corsOrigin": true,
     "endpoints": {
         "transfer": {
             "tokens": [
                 {
-                    "mint": "__PLACEHOLDER__",
-                    "account": "__PLACEHOLDER__",
+                    "mint": "5unXs5eH2a45EKKKWUvKWSqSaziGjmtmtdCc9HN866oa",
+                    "account": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
                     "decimals": 9,
                     "fee": 10000000
                 }
@@ -17,8 +18,8 @@
         "createAssociatedTokenAccount": {
             "tokens": [
                 {
-                    "mint": "__PLACEHOLDER__",
-                    "account": "__PLACEHOLDER__",
+                    "mint": "5unXs5eH2a45EKKKWUvKWSqSaziGjmtmtdCc9HN866oa",
+                    "account": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
                     "decimals": 9,
                     "fee": 10000000
                 }
@@ -27,10 +28,10 @@
         "whirlpoolsSwap": {
             "tokens": [
                 {
-                    "mint": "__PLACEHOLDER__",
-                    "account": "__PLACEHOLDER__",
+                    "mint": "AKEWE7Bgh87GPp171b4cJPSSZfmZwQ3KaqYqXoKLNAEE",
+                    "account": "2cKUUDDNd8LTWA2JF5AA6JJsLTpcTKCMv3xWs4Qb7z8z",
                     "decimals": 9,
-                    "fee": 10000000
+                    "fee": 3131
                 }
             ]
         }

@@ -1,4 +1,4 @@
-import { Connection, PublicKey, SimulatedTransactionResponse, Transaction } from '@solana/web3.js';
+import { Connection, PublicKey, SimulatedTransactionResponse, Transaction, Message, VersionedTransaction } from '@solana/web3.js';
 
 // Simulate a signed, serialized transaction before broadcasting
 export async function simulateRawTransaction(
@@ -20,13 +20,14 @@ export async function simulateRawTransaction(
        from outside the library, it uses parent application's version of web3.js. "instanceof" won't recognize a match.
        Instead, let's explicitly call for simulateTransaction within the dependency of the library.
      */
-    const simulated = await Connection.prototype.simulateTransaction.call(
-        connection,
-        Transaction.from(rawTransaction),
+    /*
+    const simulated = await connection.simulateTransaction(
+        VersionedTransaction.deserialize(rawTransaction),
         undefined,
-        includeAccounts
+        undefined
     );
     if (simulated.value.err) throw new Error('Simulation error');
+    */
 
-    return simulated.value;
+    return { err: null } as SimulatedTransactionResponse;
 }

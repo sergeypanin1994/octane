@@ -4,9 +4,9 @@ import { Keypair, Message, PublicKey } from '@solana/web3.js';
 
 function bufferToSign(key: string, serializedMessage: Buffer): Buffer {
     return Buffer.concat([
-        Buffer.from('octane-message-token', 'utf-8'),
-        Buffer.from(key),
-        serializedMessage
+        new Uint8Array(Buffer.from('octane-message-token', 'utf-8')),
+        new Uint8Array(Buffer.from(key)),
+        new Uint8Array(serializedMessage)
     ]);
 }
 
@@ -28,7 +28,7 @@ export class MessageToken {
 
     compile(): string {
         const buffer = bufferToSign(this.key, this.message.serialize());
-        const signature = nacl.sign.detached(buffer, this.keypair.secretKey);
+        const signature = nacl.sign.detached(new Uint8Array(buffer), this.keypair.secretKey);
         return base58.encode(signature);
     }
 
@@ -38,6 +38,6 @@ export class MessageToken {
         }
         const buffer = bufferToSign(key, message.serialize());
         const signature = base58.decode(token);
-        return nacl.sign.detached.verify(buffer, signature, publicKey.toBuffer());
+        return nacl.sign.detached.verify(new Uint8Array(buffer), new Uint8Array(signature), new Uint8Array(publicKey.toBuffer()));
     }
 }

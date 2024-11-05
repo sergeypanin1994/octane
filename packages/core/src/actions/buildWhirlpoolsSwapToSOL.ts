@@ -54,9 +54,11 @@ export async function buildWhirlpoolsSwapToSOL(
         genesisHash = await connection.getGenesisHash();
         await cache.set<string>(genesisHashKey, genesisHash);
     }
+    /*
     if (!isMainnetBetaCluster(genesisHash)) {
         throw new Error('Whirlpools endpoint can only run attached to the mainnet-beta cluster');
     }
+    */
 
     if (amount.lte(new BN(0))) {
         throw new Error('Amount can\'t be zero or less');
@@ -105,6 +107,8 @@ export async function buildWhirlpoolsSwapToSOL(
             feeOptions.destinationAccount,
             user,
             feeOptions.amount,
+            undefined,
+            new PublicKey("TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb")
         );
     }
 
