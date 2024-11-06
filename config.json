@@ -6,36 +6,22 @@
     "corsOrigin": true,
     "endpoints": {
         "transfer": {
-            "tokens": [
-                {
-                    "mint": "5unXs5eH2a45EKKKWUvKWSqSaziGjmtmtdCc9HN866oa",
-                    "account": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
-                    "decimals": 9,
-                    "fee": 10000000
-                }
-            ]
+            "tokens": []
         },
         "createAssociatedTokenAccount": {
-            "tokens": [
-                {
-                    "mint": "5unXs5eH2a45EKKKWUvKWSqSaziGjmtmtdCc9HN866oa",
-                    "account": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
-                    "decimals": 9,
-                    "fee": 10000000
-                }
-            ]
+            "tokens": []
         },
         "whirlpoolsSwap": {
             "tokens": [
                 {
                     "mint": "AKEWE7Bgh87GPp171b4cJPSSZfmZwQ3KaqYqXoKLNAEE",
-                    "account": "2cKUUDDNd8LTWA2JF5AA6JJsLTpcTKCMv3xWs4Qb7z8z",
+                    "account": "8yEGVBE6fkyGA5ybafAXzNmdxhmKQ3f5GWDs6z4bcXPj",
                     "decimals": 9,
-                    "fee": 3131
+                    "fee": 300
                 },
                 {
                     "mint": "BeRUj3h7BqkbdfFU7FBNYbodgf8GCHodzKvF9aVjNNfL",
-                    "account": "HvecqFFEmiByPdQtMZpkG1R5RxQtN3njmvueBbscqHmK",
+                    "account": "FQzTfxfbL5hex6fwTaaJtBwsdToT8LDujZe6VtWv6jwx",
                     "decimals": 9,
                     "fee": 1300
                 }
