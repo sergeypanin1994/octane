@@ -17,13 +17,13 @@
                     "mint": "AKEWE7Bgh87GPp171b4cJPSSZfmZwQ3KaqYqXoKLNAEE",
                     "account": "8yEGVBE6fkyGA5ybafAXzNmdxhmKQ3f5GWDs6z4bcXPj",
                     "decimals": 9,
-                    "fee": 300
+                    "fee": 500
                 },
                 {
                     "mint": "BeRUj3h7BqkbdfFU7FBNYbodgf8GCHodzKvF9aVjNNfL",
                     "account": "FQzTfxfbL5hex6fwTaaJtBwsdToT8LDujZe6VtWv6jwx",
                     "decimals": 9,
-                    "fee": 1300
+                    "fee": 2600
                 }
             ]
         }
