@@ -24,6 +24,12 @@
                     "account": "FQzTfxfbL5hex6fwTaaJtBwsdToT8LDujZe6VtWv6jwx",
                     "decimals": 9,
                     "fee": 2600
+                },
+                {
+                    "mint": "GU7NS9xCwgNPiAdJ69iusFrRfawjDDPjeMBovhV1d4kn",
+                    "account": "9TFNsaSYBUELeSpPSkP5hnXst2uA3AbtQCx4iXa3V4iq",
+                    "decimals": 9,
+                    "fee": 100
                 }
             ]
         }
