@@ -40,6 +40,11 @@ function findCorrectPool(mintA: PublicKey, mintB: PublicKey): PublicKey {
         return new PublicKey("2FR5TF3iDCLzGbWAuejR7LKiUL1J8ERnC1z2WGhC9s6D");
     }
 
+    // teth
+    if ([mintA.toBase58(), mintB.toBase58()].includes("GU7NS9xCwgNPiAdJ69iusFrRfawjDDPjeMBovhV1d4kn")) {
+        return new PublicKey("BqinHKam4jX8NUYbj2LsMnBYbqFnPvggiyx4PBHPkhSo");
+    }
+
     // sol
     return new PublicKey("CFYaUSe34VBEoeKdJBXm9ThwsWoLaQ5stgiA3eUWBwV4");
 }
