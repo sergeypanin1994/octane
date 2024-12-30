@@ -23,7 +23,7 @@ import config from '../../../../config.json';
 export default async function (request: NextApiRequest, response: NextApiResponse) {
     await cors(request, response);
     await rateLimit(request, response);
-    console.log('Request body', req.body);
+    console.log('Request body', request.body);
 
     let user: PublicKey;
     try {
