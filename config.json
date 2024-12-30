@@ -1,5 +1,5 @@
 {
-    "rpcUrl": "https://mainnetbeta-rpc.eclipse.xyz",
+    "rpcUrl": "https://eclipse.lgns.net/",
     "maxSignatures": 5,
     "returnSignature": true,
     "lamportsPerSignature": 15000,
