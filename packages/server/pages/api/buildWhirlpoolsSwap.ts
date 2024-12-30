@@ -23,12 +23,14 @@ import config from '../../../../config.json';
 export default async function (request: NextApiRequest, response: NextApiResponse) {
     await cors(request, response);
     await rateLimit(request, response);
+    console.log('Request body', req.body);
 
     let user: PublicKey;
     try {
         user = new PublicKey(request.body?.user);
     } catch {
         response.status(400).send({ status: 'error', message: 'missing or invalid "user" parameter' });
+        console.log('Returns:', { status: 'error', message: 'missing or invalid "user" parameter' });
         return;
     }
     let sourceMint: PublicKey;
@@ -36,6 +38,7 @@ export default async function (request: NextApiRequest, response: NextApiRespons
         sourceMint = new PublicKey(request.body?.sourceMint);
     } catch {
         response.status(400).send({ status: 'error', message: 'missing or invalid "sourceMint" parameter' });
+        console.log('Returns: missing or invalid "sourceMint" parameter');
         return;
     }
     let amount: BN;
@@ -43,6 +46,7 @@ export default async function (request: NextApiRequest, response: NextApiRespons
         amount = new BN(parseInt(request.body?.amount));
     } catch {
         response.status(400).send({ status: 'error', message: 'missing or invalid "amount" parameter' });
+        console.log('Returns: missing or invalid "amount" parameter');
         return;
     }
 
@@ -53,6 +57,7 @@ export default async function (request: NextApiRequest, response: NextApiRespons
         );
     } catch {
         response.status(400).send({ status: 'error', message: 'missing or invalid "slippingTolerance" parameter' });
+        console.log('Returns: missing or invalid "slippingTolerance" parameter');
         return;
     }
 
@@ -89,6 +94,7 @@ export default async function (request: NextApiRequest, response: NextApiRespons
                 config.returnSignature as unknown as ReturnSignatureConfigField
             )) {
                 response.status(400).send({ status: 'error', message: 'anti-spam check failed' });
+                console.log('Returns: anti-spam check failed');
                 return;
             }
             transaction.sign(ENV_SECRET_KEYPAIR);
@@ -113,6 +119,7 @@ export default async function (request: NextApiRequest, response: NextApiRespons
         if (error instanceof Error) {
             message = error.message;
         }
+        console.log('[error] Returns:', message);
         response.status(400).send({ status: 'error', message });
     }
 }
