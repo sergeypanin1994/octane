@@ -22,13 +22,13 @@ It leverages unique properties of Solana:
 
 1) Transaction can have multiple signers, one of whom is the transaction fee payer. There is no single "msg.sender".
 
-2) Transaction can have multiple instructions interacting with different programs that are executed atomically. If one instruction fail, whole transactions fails.
+2) Transaction can have multiple instructions interacting with different programs that are executed atomically. If one instruction fails, the whole transaction fails.
 
-3) Each instruction refers to accounts it touches as writable or readable. It allows to validate transactions before signing.
+3) Each instruction refers to accounts it touches as writable or readable. It allows validating transactions before signing.
 
 A user creates a transaction that contains an instruction for a small token transfer to Octane, along with whatever else their transaction is supposed to do.
 
-The user partially signs the transaction, authorizing it to make the transfer, and so it can't be modified by Octane or MITM attacks.
+The user partially signs the transaction, authorizing it to make the transfer, ensuring it can't be modified by Octane or MITM attacks.
 
 The user sends the serialized transaction to an Octane REST API endpoint.
 
@@ -41,7 +41,7 @@ When the transaction is confirmed, Octane will have been paid a fee in the token
 ## Getting started
 
 1. You can use Octane as a server application to deploy on a platform like Render or Vercel.
-2. You can use someone else's node. This way you don't have to support your own server and manage funds on fee payer account. However, you'll be limited by SPL tokens they offer at their price per signature.
+2. You can use someone else's node. This way you don't have to support your own server and manage funds on the fee payer account. However, you'll be limited by SPL tokens they offer at their price per signature.
 3. You can integrate Octane into your backend by using it as a Node.js library.
 
 Get an overview of Octane's use cases and how to implement them in [Recipes](docs/recipes.md).
@@ -97,7 +97,7 @@ Follow these recommendations to minimize risks:
 3. Don't hold more SOL on the keypair than needed for 3-4 hours of spending on transaction fees for your load expectations. It could be as low as 0.2-1 SOL.
 4. Every hour automatically received swap tokens to SOL (Octane provides a CLI for that).
 5. Regularly check that prices and liquidity of SPL tokens allow your profitably pay for transaction fees in SOL.
-6. If your Octane node makes profit, regularly withdraw that profit to another keypair.
+6. If your Octane node makes a profit, regularly withdraw that profit to another keypair.
 7. When using Octane as a library in your backend, make sure to:
     1. Never return fee payer's signature of an unconfirmed transaction to a user. You must submit transaction to the network from the backend.
     2. Implement duplicated transaction checks, limits per user and general rate limits.
@@ -124,13 +124,13 @@ Octane is built as a monorepo with multiple packages using [Lerna](https://lerna
 
 If you want to create a new action (for example, swap on a new protocol), you'll need to add it as an action in Core and add a new endpoint in Server that calls new action.
 
-Octane utilizes cache for some rate limiting, but generally should be stateless.
+Octane utilizes caching for some rate limiting, but generally should be stateless.
 
 ### Vision
 
 Octane wants to make Solana easier to use by abstracting away some complexity that leads to user confusion and error.
 
-Octane wants to enable SOL-less wallets for new users in crypto, allowing them to operate only in stablecoins.
+Octane wants to enable SOL-less wallets for new users in crypto, allowing them to operate exclusively with stablecoins.
 
 Octane wants to become integrated with wallets, support multiple tokens with different fees, and perform atomic swaps to pay for transactions or get SOL.
 
