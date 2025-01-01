@@ -3,12 +3,11 @@ import { Connection, Keypair, PublicKey, Transaction, TransactionInstruction } f
 import {
     createTransferInstruction,
     getAssociatedTokenAddress,
+    createCloseAccountInstruction,
     getMinimumBalanceForRentExemptAccount,
     NATIVE_MINT,
 } from '@solana/spl-token';
-import {
-    SwapQuote,
-} from '@orca-so/whirlpools-sdk';
+import { SwapQuote } from '@orca-so/whirlpools-sdk';
 import { Percentage } from '@orca-so/common-sdk';
 import type { Cache } from 'cache-manager';
 
@@ -16,9 +15,9 @@ import { simulateRawTransaction, isMainnetBetaCluster, MessageToken } from '../c
 import { whirlpools } from '../swapProviders';
 
 export type FeeOptions = {
-    amount: number,
-    sourceAccount: PublicKey,
-    destinationAccount: PublicKey,
+    amount: number;
+    sourceAccount: PublicKey;
+    destinationAccount: PublicKey;
 };
 
 /**
@@ -45,8 +44,8 @@ export async function buildWhirlpoolsSwapToSOL(
     slippingTolerance: Percentage,
     cache: Cache,
     sameMintTimeout = 3000,
-    feeOptions?: FeeOptions,
-): Promise<{ transaction: Transaction; quote: SwapQuote, messageToken: string }> {
+    feeOptions?: FeeOptions
+): Promise<{ transaction: Transaction; quote: SwapQuote; messageToken: string }> {
     // Connection's genesis hash is cached to prevent an extra RPC query to the node on each call.
     const genesisHashKey = `genesis/${connection.rpcEndpoint}`;
     let genesisHash = await cache.get<string>(genesisHashKey);
@@ -61,11 +60,11 @@ export async function buildWhirlpoolsSwapToSOL(
     */
 
     if (amount.lte(new BN(0))) {
-        throw new Error('Amount can\'t be zero or less');
+        throw new Error("Amount can't be zero or less");
     }
 
     if (feeOptions && feeOptions.amount < 0) {
-        throw new Error('Fee can\'t be less than zero');
+        throw new Error("Fee can't be less than zero");
     }
 
     const key = `swap/${user.toString()}/${sourceMint.toString()}`;
@@ -74,11 +73,6 @@ export async function buildWhirlpoolsSwapToSOL(
         throw new Error('Too many requests for same user and mint');
     }
     // cache.set() is in the end of the function
-
-    const associatedSOLAddress = await getAssociatedTokenAddress(NATIVE_MINT, user);
-    if ((await connection.getAccountInfo(associatedSOLAddress))) {
-        throw new Error('Associated SOL account exists for user');
-    }
 
     const context = whirlpools.getWhirlpoolsContext(connection);
     const [mintA, mintB] = whirlpools.getABMints(sourceMint, NATIVE_MINT);
@@ -91,6 +85,14 @@ export async function buildWhirlpoolsSwapToSOL(
         slippingTolerance
     );
 
+    const associatedSOLAddress = await getAssociatedTokenAddress(NATIVE_MINT, user);
+    let associatedSOLAddressExists: boolean = false;
+    if (await connection.getAccountInfo(associatedSOLAddress)) {
+        console.log('here is the sghit');
+        // throw new Error('Associated SOL account exists for user');
+        associatedSOLAddressExists = true;
+    }
+
     const swapInstructions = await whirlpools.getSwapInstructions(
         feePayer.publicKey,
         user,
@@ -98,6 +100,7 @@ export async function buildWhirlpoolsSwapToSOL(
         whirlpool,
         quote,
         await getMinimumBalanceForRentExemptAccount(connection),
+        associatedSOLAddressExists
     );
 
     let feeTransferInstruction: TransactionInstruction | undefined;
@@ -108,20 +111,18 @@ export async function buildWhirlpoolsSwapToSOL(
             user,
             feeOptions.amount,
             undefined,
-            new PublicKey("TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb")
+            new PublicKey('TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb')
         );
     }
 
     const instructions = feeTransferInstruction ? [feeTransferInstruction, ...swapInstructions] : swapInstructions;
+
     const transaction = new Transaction({
         feePayer: feePayer.publicKey,
         ...(await connection.getLatestBlockhash()),
     }).add(...instructions);
 
-    await simulateRawTransaction(
-        connection,
-        transaction.serialize({verifySignatures: false}),
-    );
+    await simulateRawTransaction(connection, transaction.serialize({ verifySignatures: false }));
 
     const messageToken = new MessageToken(
         whirlpools.MESSAGE_TOKEN_KEY,
@@ -132,5 +133,5 @@ export async function buildWhirlpoolsSwapToSOL(
     // set last signature for mint and user
     await cache.set<number>(key, Date.now());
 
-    return {transaction, quote, messageToken};
+    return { transaction, quote, messageToken };
 }

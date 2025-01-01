@@ -3,9 +3,11 @@ import {
     buildWhirlpoolClient,
     PDAUtil,
     PoolUtil,
-    SwapQuote, swapQuoteByInputToken,
+    SwapQuote,
+    swapQuoteByInputToken,
     Whirlpool,
-    WhirlpoolContext, WhirlpoolIx,
+    WhirlpoolContext,
+    WhirlpoolIx,
 } from '@orca-so/whirlpools-sdk';
 import { Wallet } from '@project-serum/anchor';
 import { AddressUtil, Percentage, Wallet as OrcaWallet } from '@orca-so/common-sdk';
@@ -36,17 +38,17 @@ export function getABMints(sourceMint: PublicKey, targetMint: PublicKey): [Publi
 
 function findCorrectPool(mintA: PublicKey, mintB: PublicKey): PublicKey {
     // usdc
-    if ([mintA.toBase58(), mintB.toBase58()].includes("AKEWE7Bgh87GPp171b4cJPSSZfmZwQ3KaqYqXoKLNAEE")) {
-        return new PublicKey("2FR5TF3iDCLzGbWAuejR7LKiUL1J8ERnC1z2WGhC9s6D");
+    if ([mintA.toBase58(), mintB.toBase58()].includes('AKEWE7Bgh87GPp171b4cJPSSZfmZwQ3KaqYqXoKLNAEE')) {
+        return new PublicKey('2FR5TF3iDCLzGbWAuejR7LKiUL1J8ERnC1z2WGhC9s6D');
     }
 
     // teth
-    if ([mintA.toBase58(), mintB.toBase58()].includes("GU7NS9xCwgNPiAdJ69iusFrRfawjDDPjeMBovhV1d4kn")) {
-        return new PublicKey("BqinHKam4jX8NUYbj2LsMnBYbqFnPvggiyx4PBHPkhSo");
+    if ([mintA.toBase58(), mintB.toBase58()].includes('GU7NS9xCwgNPiAdJ69iusFrRfawjDDPjeMBovhV1d4kn')) {
+        return new PublicKey('BqinHKam4jX8NUYbj2LsMnBYbqFnPvggiyx4PBHPkhSo');
     }
 
     // sol
-    return new PublicKey("CFYaUSe34VBEoeKdJBXm9ThwsWoLaQ5stgiA3eUWBwV4");
+    return new PublicKey('CFYaUSe34VBEoeKdJBXm9ThwsWoLaQ5stgiA3eUWBwV4');
 }
 
 export async function getPoolAndQuote(
@@ -67,7 +69,7 @@ export async function getPoolAndQuote(
         amount,
         slippingTolerance,
         WHIRLPOOL_PROGRAM_ID,
-        context.fetcher,
+        context.fetcher
     );
     return [whirlpool, quote];
 }
@@ -79,42 +81,36 @@ export async function getSwapInstructions(
     whirlpool: Whirlpool,
     quote: SwapQuote,
     rentExemptBalance: number,
+    associatedTokenAccountExists: boolean
 ): Promise<TransactionInstruction[]> {
     const associatedSOLAddress = await getAssociatedTokenAddress(NATIVE_MINT, user);
-    const setupInstructions = [
-        createAssociatedTokenAccountInstruction(
-            feePayer,
-            associatedSOLAddress,
-            user,
-            NATIVE_MINT
-        )
-    ];
+    const setupInstructions = associatedTokenAccountExists
+        ? []
+        : [createAssociatedTokenAccountInstruction(feePayer, associatedSOLAddress, user, NATIVE_MINT)];
 
     const data = whirlpool.getData();
-    const swapInstructions = WhirlpoolIx.swapV2Ix(
-        context.program,
-        {
-            ...quote,
-            whirlpool: whirlpool.getAddress(),
-            tokenMintA: whirlpool.getTokenAInfo().mint,
-            tokenMintB: whirlpool.getTokenBInfo().mint,
-            tokenOwnerAccountA: await getAssociatedTokenAddress(data.tokenMintA, user),
-            tokenOwnerAccountB: await getAssociatedTokenAddress(data.tokenMintB, user, undefined, new PublicKey("TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb")),
-            tokenVaultA: data.tokenVaultA,
-            tokenVaultB: data.tokenVaultB,
-            tokenProgramA: new PublicKey("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"),
-            tokenProgramB: new PublicKey("TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb"),
-            tokenAuthority: user,
-            oracle: PDAUtil.getOracle(WHIRLPOOL_PROGRAM_ID, whirlpool.getAddress()).publicKey
-        }
-    ).instructions;
+    const swapInstructions = WhirlpoolIx.swapV2Ix(context.program, {
+        ...quote,
+        whirlpool: whirlpool.getAddress(),
+        tokenMintA: whirlpool.getTokenAInfo().mint,
+        tokenMintB: whirlpool.getTokenBInfo().mint,
+        tokenOwnerAccountA: await getAssociatedTokenAddress(data.tokenMintA, user),
+        tokenOwnerAccountB: await getAssociatedTokenAddress(
+            data.tokenMintB,
+            user,
+            undefined,
+            new PublicKey('TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb')
+        ),
+        tokenVaultA: data.tokenVaultA,
+        tokenVaultB: data.tokenVaultB,
+        tokenProgramA: new PublicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'),
+        tokenProgramB: new PublicKey('TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb'),
+        tokenAuthority: user,
+        oracle: PDAUtil.getOracle(WHIRLPOOL_PROGRAM_ID, whirlpool.getAddress()).publicKey,
+    }).instructions;
 
     const cleanupInstructions = [
-        createCloseAccountInstruction(
-            associatedSOLAddress,
-            user,
-            user
-        ),
+        createCloseAccountInstruction(associatedSOLAddress, user, user),
         // createAssociatedTokenAccountInstruction transfers rent-exemption minimum from Octane to newly created token account.
         // when createCloseAccountInstruction sent the SOL output to user, it also included this rent-exemption minimum.
         SystemProgram.transfer({
